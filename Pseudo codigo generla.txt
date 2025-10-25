@@ -1,83 +1,42 @@
-PSEUDOCÓDIGO GENERAL - GESTOR DE NOTAS ACADÉMICAS
-
 INICIO
-    CREAR listas: cursos[], notas[]
-    CREAR pila historial[]
-    CREAR cola cola_revisiones[]
-
     REPETIR
-        MOSTRAR menú principal:
-            1. Registrar nuevo curso
-            2. Mostrar cursos y notas
-            3. Calcular promedio general
-            4. Contar cursos aprobados y reprobados
-            5. Buscar curso por nombre (búsqueda lineal)
-            6. Actualizar nota de un curso
-            7. Eliminar un curso
-            8. Ordenar cursos por nota (burbuja)
-            9. Ordenar cursos por nombre (inserción)
-            10. Buscar curso por nombre (búsqueda binaria)
-            11. Simular cola de solicitudes de revisión
-            12. Mostrar historial de cambios
-            13. Salir
+        MOSTRAR "====== GESTOR DE NOTAS ACADÉMICAS ======"
+        MOSTRAR "1. Registrar nuevo curso"
+        MOSTRAR "2. Mostrar cursos y notas"
+        MOSTRAR "3. Calcular promedio general"
+        MOSTRAR "4. Contar cursos aprobados y reprobados"
+        MOSTRAR "5. Buscar curso por nombre (búsqueda lineal)"
+        MOSTRAR "6. Actualizar nota de un curso"
+        MOSTRAR "7. Eliminar un curso"
+        MOSTRAR "8. Ordenar cursos por nota (burbuja)"
+        MOSTRAR "9. Ordenar cursos por nombre (inserción)"
+        MOSTRAR "10. Buscar curso por nombre (búsqueda binaria)"
+        MOSTRAR "11. Simular cola de solicitudes de revisión"
+        MOSTRAR "12. Mostrar historial de cambios"
+        MOSTRAR "13. Salir"
         LEER opción
 
         SEGÚN opción HACER
-            CASO 1:
-                LEER nombre y nota
-                VALIDAR nota entre 0 y 100
-                AGREGAR a cursos[] y notas[]
-                APILAR en historial "Curso registrado"
-            CASO 2:
-                SI hay cursos ENTONCES
-                    MOSTRAR todos los cursos y notas
-                SINO
-                    MOSTRAR "No hay cursos"
-            CASO 3:
-                CALCULAR promedio ← SUMA(notas) / LONGITUD(notas)
-                MOSTRAR promedio
-            CASO 4:
-                CONTAR aprobados ← notas >= 60
-                CONTAR reprobados ← notas < 60
-                MOSTRAR ambos
-            CASO 5:
-                LEER nombre
-                RECORRER cursos[]
-                SI nombre está contenido
-                    MOSTRAR curso y nota
-            CASO 6:
-                LEER nombre exacto
-                SI existe EN cursos[]
-                    LEER nueva nota
-                    ACTUALIZAR nota
-                    REGISTRAR cambio en historial
-            CASO 7:
-                LEER nombre
-                SI existe EN cursos[]
-                    CONFIRMAR eliminación
-                    ELIMINAR curso y nota
-                    REGISTRAR en historial
-            CASO 8:
-                ORDENAR cursos y notas POR nota (burbuja)
-                MOSTRAR resultado
-            CASO 9:
-                ORDENAR cursos y notas POR nombre (inserción)
-                MOSTRAR resultado
-            CASO 10:
-                SI lista está ordenada por nombre
-                    REALIZAR búsqueda binaria
-                    MOSTRAR resultado
-                SINO
-                    MOSTRAR advertencia
-            CASO 11:
-                LEER nombres hasta que sea 'fin'
-                AGREGAR a cola_revisiones[]
-                MIENTRAS cola no esté vacía
-                    DESENCOLAR y MOSTRAR curso revisado
-            CASO 12:
-                MOSTRAR historial en orden inverso
+            CASO 1: LLAMAR RegistrarNuevoCurso()
+            CASO 2: LLAMAR MostrarCursosYNotas()
+            CASO 3: LLAMAR CalcularPromedio()
+            CASO 4: LLAMAR ContarAprobadosYReprobados()
+            CASO 5: LLAMAR BuscarCursoLineal()
+            CASO 6: LLAMAR ActualizarNota()
+            CASO 7: LLAMAR EliminarCurso()
+            CASO 8: LLAMAR OrdenarPorNotaBurbuja()
+            CASO 9: LLAMAR OrdenarPorNombreInsercion()
+            CASO 10: LLAMAR BusquedaBinariaPorNombre()
+            CASO 11: LLAMAR SimularColaRevisiones()
+            CASO 12: LLAMAR MostrarHistorial()
             CASO 13:
-                MOSTRAR mensaje de despedida
-        FINSEGÚN
-    HASTA que opción sea 13
+                MOSTRAR "✅ Gracias por usar el Gestor de Notas Académicas."
+                MOSTRAR "👋 Hasta pronto."
+            DE OTRO MODO:
+                MOSTRAR "⚠️ Opción inválida. Intente de nuevo."
+        FIN SEGÚN
+    HASTA QUE opción = 13
 FIN
+
+FIN
+
