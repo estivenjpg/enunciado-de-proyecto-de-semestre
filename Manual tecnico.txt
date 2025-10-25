@@ -1,0 +1,42 @@
+MANUAL TECNICO
+
+Proyecto Final - Programación
+Nombre del proyecto: Gestor de Notas Académicas
+Estudiante:Brandon Estiveen Perez Ibañez
+Fecha: 24/10/2025
+
+Descripción técnica
+
+Programa basado en consola con menús interactivos.
+
+Utiliza funciones modulares y estructuras de datos básicas.
+
+No emplea librerías externas.
+
+Estructura general del código
+
+gestor_notas.py: contiene todas las funciones y el menú principal.
+
+Uso de estructuras de datos
+
+Listas: para almacenar cursos y notas paralelamente.
+
+Pila (historial): para registrar los últimos cambios.
+
+Cola (revisiones): para simular solicitudes de revisión.
+
+Algoritmos de ordenamiento
+
+Burbuja: utilizado para ordenar cursos por nota.
+
+Inserción: utilizado para ordenar cursos por nombre.
+
+Búsquedas
+
+Lineal: para coincidencias parciales.
+
+Binaria: sobre lista ordenada alfabéticamente.
+
+Funciones principales
+
+registrar_nuevo_curso(), mostrar_todos_los_cursos_y_notas(), calcular_promedio(), etc.

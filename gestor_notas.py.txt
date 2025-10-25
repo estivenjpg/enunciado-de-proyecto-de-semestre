@@ -1,0 +1,352 @@
+gestor_notas.py
+# SISTEMA DE REGISTRO UMG
+# Ejecutar en consola. No usa librerías externas ni archivos.
+# Autor: (tu nombre)
+# Fecha: (coloca fecha)
+
+# -----------------------
+# ESTRUCTURAS PRINCIPALES
+# -----------------------
+cursos = []        # lista de nombres de cursos (paralela a 'notas')
+notas = []         # lista de notas (float) con el mismo índice que 'cursos'
+historial = []     # pila de acciones (stack) -> append para push, pop para pop
+cola_revisiones = []  # cola simulada para solicitudes de revisión (FIFO)
+
+# -----------------------
+# FUNCIONES AUXILIARES
+# -----------------------
+
+def solicitar_nombre_curso(mensaje="Ingrese el nombre del curso: "):
+    """Solicita un nombre de curso no vacío y lo devuelve con formato."""
+    while True:
+        nombre = input(mensaje).strip()
+        if nombre:
+            return nombre
+        print("⚠️ El nombre del curso no puede estar vacío.")
+
+
+def solicitar_nota(mensaje="Ingrese la nota (0-100): "):
+    """Solicita una nota entre 0 y 100 y la devuelve como float."""
+    while True:
+        valor = input(mensaje).strip()
+        try:
+            nota = float(valor)
+            if 0 <= nota <= 100:
+                return nota
+            else:
+                print("⚠️ La nota debe estar entre 0 y 100.")
+        except ValueError:
+            print("⚠️ Debe ingresar un número válido.")
+
+
+def encontrar_indice_por_nombre(nombre_buscar):
+    """Búsqueda lineal por coincidencia exacta (case-insensitive).
+       Devuelve el índice o None si no existe."""
+    objetivo = nombre_buscar.strip().lower()
+    for i, nombre in enumerate(cursos):
+        if nombre.lower() == objetivo:
+            return i
+    return None
+
+
+# -----------------------
+# FUNCIONALIDADES PRINCIPALES
+# -----------------------
+
+def registrar_nuevo_curso():
+    """Registra un nuevo curso con su nota (validada)."""
+    nombre = solicitar_nombre_curso()
+    nota = solicitar_nota()
+    cursos.append(nombre)
+    notas.append(nota)
+    historial.append(f"Se registró: {nombre} - Nota: {nota}")
+    print("✅ Curso registrado con éxito.")
+
+
+def mostrar_todos_los_cursos_y_notas():
+    """Muestra lista numerada de cursos y notas."""
+    if not cursos:
+        print("⚠️ No hay cursos registrados.")
+        return
+    print("\n📚 CURSOS REGISTRADOS:")
+    for i, (c, n) in enumerate(zip(cursos, notas), start=1):
+        print(f"{i}. {c} - Nota: {n}")
+    print(f"📊 Promedio general: {calcular_promedio(silent=True):.2f}")
+
+
+def calcular_promedio(silent=False):
+    """Calcula y retorna el promedio; si silent False, muestra resultado."""
+    if not notas:
+        if not silent:
+            print("⚠️ No hay notas para calcular promedio.")
+        return 0.0
+    promedio = sum(notas) / len(notas)
+    if not silent:
+        print(f"📊 Promedio general: {promedio:.2f}")
+    return promedio
+
+
+def contar_aprobados_reprobados():
+    """Cuenta y muestra cursos aprobados (nota>=60) y reprobados."""
+    if not notas:
+        print("⚠️ No hay cursos registrados.")
+        return
+    aprobados = sum(1 for n in notas if n >= 60)
+    reprobados = len(notas) - aprobados
+    print(f"✅ Cursos aprobados: {aprobados}")
+    print(f"❌ Cursos reprobados: {reprobados}")
+
+
+def busqueda_lineal_por_nombre():
+    """Búsqueda que permite coincidencia parcial e insensitive."""
+    if not cursos:
+        print("⚠️ No hay cursos registrados.")
+        return
+    termino = input("Ingrese el nombre o parte del nombre a buscar: ").strip().lower()
+    resultados = []
+    for i, (c, n) in enumerate(zip(cursos, notas)):
+        if termino in c.lower():
+            resultados.append((i, c, n))
+    if resultados:
+        print(f"🔎 Se encontraron {len(resultados)} resultado(s):")
+        for idx, c, n in resultados:
+            print(f"- {c} (índice: {idx + 1}) - Nota: {n}")
+    else:
+        print("🔎 No se encontraron cursos que coincidan.")
+
+
+def actualizar_nota_de_un_curso():
+    """Actualiza la nota de un curso buscándolo por nombre (coincidencia exacta)."""
+    if not cursos:
+        print("⚠️ No hay cursos registrados.")
+        return
+    nombre = input("Ingrese el nombre exacto del curso a actualizar: ").strip()
+    idx = encontrar_indice_por_nombre(nombre)
+    if idx is None:
+        print("⚠️ Curso no encontrado (asegúrate del nombre exacto).")
+        return
+    nota_anterior = notas[idx]
+    nueva_nota = solicitar_nota("Ingrese la nueva nota (0-100): ")
+    notas[idx] = nueva_nota
+    historial.append(f"Se actualizó: {cursos[idx]} - Nota anterior: {nota_anterior} → Nueva: {nueva_nota}")
+    print("✅ Nota actualizada correctamente.")
+
+
+def eliminar_un_curso():
+    """Elimina un curso pidiendo confirmación por nombre (case-insensitive)."""
+    if not cursos:
+        print("⚠️ No hay cursos registrados.")
+        return
+    nombre = input("Ingrese el nombre del curso a eliminar: ").strip()
+    idx = encontrar_indice_por_nombre(nombre)
+    if idx is None:
+        print("⚠️ Curso no encontrado.")
+        return
+    confirmar = input(f"¿Está seguro que desea eliminar '{cursos[idx]}'? (s/n): ").strip().lower()
+    if confirmar == 's':
+        eliminado_nombre = cursos.pop(idx)
+        eliminado_nota = notas.pop(idx)
+        historial.append(f"Se eliminó: {eliminado_nombre} - Nota: {eliminado_nota}")
+        print("🗑️ Curso eliminado correctamente.")
+    else:
+        print("❌ Eliminación cancelada.")
+
+
+# -----------------------
+# ORDENAMIENTOS
+# -----------------------
+
+def ordenar_cursos_por_nota_burbuja(descendente=True):
+    """Ordenamiento burbuja por nota. Retorna listas nuevas (cursos_ord, notas_ord)."""
+    n = len(notas)
+    cursos_ord = cursos.copy()
+    notas_ord = notas.copy()
+    # burbuja adaptada para pares paralelos
+    for i in range(n - 1):
+        for j in range(n - 1 - i):
+            if (not descendente and notas_ord[j] > notas_ord[j + 1]) or (descendente and notas_ord[j] < notas_ord[j + 1]):
+                # intercambiar en ambas listas
+                notas_ord[j], notas_ord[j + 1] = notas_ord[j + 1], notas_ord[j]
+                cursos_ord[j], cursos_ord[j + 1] = cursos_ord[j + 1], cursos_ord[j]
+    return cursos_ord, notas_ord
+
+
+def ordenar_cursos_por_nombre_insercion():
+    """Ordenamiento por inserción alfabético por nombre (A->Z)."""
+    cursos_ord = cursos.copy()
+    notas_ord = notas.copy()
+    for i in range(1, len(cursos_ord)):
+        key_nombre = cursos_ord[i]
+        key_nota = notas_ord[i]
+        j = i - 1
+        while j >= 0 and cursos_ord[j].lower() > key_nombre.lower():
+            cursos_ord[j + 1] = cursos_ord[j]
+            notas_ord[j + 1] = notas_ord[j]
+            j -= 1
+        cursos_ord[j + 1] = key_nombre
+        notas_ord[j + 1] = key_nota
+    return cursos_ord, notas_ord
+
+
+# -----------------------
+# BÚSQUEDA BINARIA
+# -----------------------
+
+def busqueda_binaria_por_nombre():
+    """Búsqueda binaria por nombre. Requiere que los cursos estén ordenados por nombre."""
+    if not cursos:
+        print("⚠️ No hay cursos registrados.")
+        return
+    # verificar si están ordenados por nombre (case-insensitive)
+    cursos_ord, notas_ord = ordenar_cursos_por_nombre_insercion()
+    if cursos != cursos_ord:
+        print("⚠️ Para usar búsqueda binaria, primero ordene los cursos por nombre (opción 9).")
+        # le damos la opción de ordenar ahora
+        opc = input("¿Desea ordenar ahora por nombre para continuar? (s/n): ").strip().lower()
+        if opc != 's':
+            return
+        # si confirma, trabajamos con la lista ordenada temporal
+    # usamos la lista ordenada
+    cursos_ordenados, notas_ordenadas = cursos_ord, notas_ord
+    objetivo = input("Ingrese el nombre del curso a buscar (búsqueda binaria): ").strip().lower()
+    left, right = 0, len(cursos_ordenados) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        mid_nombre = cursos_ordenados[mid].lower()
+        if mid_nombre == objetivo:
+            print(f"🔎 Curso encontrado: {cursos_ordenados[mid]} - Nota: {notas_ordenadas[mid]}")
+            return
+        elif objetivo < mid_nombre:
+            right = mid - 1
+        else:
+            left = mid + 1
+    print("🔎 Curso no encontrado con búsqueda binaria.")
+
+
+# -----------------------
+# SIMULACIÓN DE COLA DE REVISIONES
+# -----------------------
+
+def simular_cola_solicitudes_revision():
+    """Simula ingreso de cursos a una cola de revisiones y procesa en FIFO."""
+    if not cursos:
+        print("⚠️ No hay cursos registrados (no hay sentido en pedir revisiones).")
+        return
+    print("Ingrese el nombre del curso para revisión (escriba 'fin' para terminar):")
+    while True:
+        entrada = input("> ").strip()
+        if entrada.lower() == 'fin':
+            break
+        if entrada:
+            cola_revisiones.append(entrada)
+    if not cola_revisiones:
+        print("⚠️ No se agregaron solicitudes de revisión.")
+        return
+    print("\nProcesando solicitudes:")
+    while cola_revisiones:
+        elemento = cola_revisiones.pop(0)  # pop desde el frente -> FIFO
+        print(f"Revisando: {elemento}")
+    print("✅ Todas las solicitudes de revisión han sido procesadas (simulación).")
+
+
+# -----------------------
+# HISTORIAL (PILA)
+# -----------------------
+
+def mostrar_historial_de_cambios():
+    """Muestra el historial en orden inverso (última acción primero)."""
+    if not historial:
+        print("⚠️ No hay cambios registrados en el historial.")
+        return
+    print("\n📜 HISTORIAL DE CAMBIOS (más reciente primero):")
+    for i, h in enumerate(reversed(historial), start=1):
+        print(f"{i}. {h}")
+
+
+# -----------------------
+# FUNCIONES AUXILIARES DE MUESTRA DE ORDENAMIENTOS
+# -----------------------
+
+def mostrar_ordenamiento_por_nota():
+    if not cursos:
+        print("⚠️ No hay cursos para ordenar.")
+        return
+    cursos_ord, notas_ord = ordenar_cursos_por_nota_burbuja(descendente=True)
+    print("\n📈 Cursos ordenados por nota (descendente):")
+    for i, (c, n) in enumerate(zip(cursos_ord, notas_ord), start=1):
+        print(f"{i}. {c} - Nota: {n}")
+
+
+def mostrar_ordenamiento_por_nombre():
+    if not cursos:
+        print("⚠️ No hay cursos para ordenar.")
+        return
+    cursos_ord, notas_ord = ordenar_cursos_por_nombre_insercion()
+    print("\n🔤 Cursos ordenados por nombre (A-Z):")
+    for i, (c, n) in enumerate(zip(cursos_ord, notas_ord), start=1):
+        print(f"{i}. {c} - Nota: {n}")
+
+
+# -----------------------
+# MENÚ PRINCIPAL
+# -----------------------
+
+def menu_principal():
+    opcion = 0
+    while opcion != 13:
+        print("\n====== GESTOR DE NOTAS ACADÉMICAS ======")
+        print("1. Registrar nuevo curso")
+        print("2. Mostrar todos los cursos y notas")
+        print("3. Calcular promedio general")
+        print("4. Contar cursos aprobados y reprobados")
+        print("5. Buscar curso por nombre (búsqueda lineal)")
+        print("6. Actualizar nota de un curso")
+        print("7. Eliminar un curso")
+        print("8. Ordenar cursos por nota (ordenamiento burbuja)")
+        print("9. Ordenar cursos por nombre (ordenamiento inserción)")
+        print("10. Buscar curso por nombre (búsqueda binaria)")
+        print("11. Simular cola de solicitudes de revisión")
+        print("12. Mostrar historial de cambios (pila)")
+        print("13. Salir")
+        print("========================================")
+        try:
+            opcion = int(input("Seleccione una opción: ").strip())
+        except ValueError:
+            print("⚠️ Opción inválida. Ingrese un número del 1 al 13.")
+            continue
+
+        if opcion == 1:
+            registrar_nuevo_curso()
+        elif opcion == 2:
+            mostrar_todos_los_cursos_y_notas()
+        elif opcion == 3:
+            calcular_promedio()
+        elif opcion == 4:
+            contar_aprobados_reprobados()
+        elif opcion == 5:
+            busqueda_lineal_por_nombre()
+        elif opcion == 6:
+            actualizar_nota_de_un_curso()
+        elif opcion == 7:
+            eliminar_un_curso()
+        elif opcion == 8:
+            mostrar_ordenamiento_por_nota()
+        elif opcion == 9:
+            mostrar_ordenamiento_por_nombre()
+        elif opcion == 10:
+            busqueda_binaria_por_nombre()
+        elif opcion == 11:
+            simular_cola_solicitudes_revision()
+        elif opcion == 12:
+            mostrar_historial_de_cambios()
+        elif opcion == 13:
+            print("✅ Gracias por usar el Gestor de Notas Académicas. ¡Hasta pronto!")
+        else:
+            print("⚠️ Opción no válida. Elija entre 1 y 13.")
+
+
+# -----------------------
+# EJECUCIÓN
+# -----------------------
+if __name__ == "__main__":
+    menu_principal()

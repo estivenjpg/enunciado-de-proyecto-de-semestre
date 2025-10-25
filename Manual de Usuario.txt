@@ -1,0 +1,70 @@
+Manual de Usuario
+
+UNIVERSIDAD MARIANO GÁLVEZ DE GUATEMALA
+Manual de Usuario - Gestor de Notas Académicas
+Estudiante: Brandon Estiveen Perez Ibañez
+Fecha: 24/10/2025
+
+
+
+Contenido
+
+Propósito del sistema
+
+Facilitar el registro, consulta y gestión de cursos y notas académicas.
+
+Requisitos
+
+Tener instalado Python 3.x.
+
+Ejecutar el programa desde la consola:
+
+python gestor_notas.py
+
+
+Uso del menú
+
+Se muestran 13 opciones numeradas.
+
+El usuario selecciona la opción deseada ingresando su número.
+
+Ejemplos
+
+Ingrese el nombre del curso: Matemáticas
+Ingrese la nota: 85
+✅ Curso registrado con éxito.
+
+
+Ejemplo de promedio
+
+Promedio general: 87.5
+
+
+Simulación de cola
+
+Ingrese curso para revisión (escriba 'fin' para terminar):
+> Matemáticas
+> Historia
+> fin
+Procesando solicitudes:
+Revisando: Matemáticas
+Revisando: Historia
+
+
+Historial
+
+📜 HISTORIAL DE CAMBIOS:
+1. Se actualizó: Matemáticas - Nota anterior: 85 → Nueva: 90
+
+
+Preguntas frecuentes
+
+¿Qué pasa si ingreso una nota mayor a 100?
+→ El sistema no la acepta.
+
+¿Se pueden guardar los datos al salir?
+→ No, el programa es temporal (solo en ejecución actual).
+
+Mensaje final
+
+✅ Gracias por usar el Gestor de Notas Académicas. ¡Hasta pronto!
